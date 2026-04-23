@@ -9,7 +9,7 @@
 This setup combines:
 - **OpenClaw** — Open-source AI assistant framework
 - **Twilio** — Voice/SMS API for phone calls
-- **Ollama** — Self-hosted LLM (runs locally)
+- **Ollama** — Self-hosted LLM (runs locally) or Ollama Cloud (managed)
 
 Your AI assistant can:
 - ✅ Receive incoming calls and respond intelligently

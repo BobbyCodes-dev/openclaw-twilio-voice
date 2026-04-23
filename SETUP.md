@@ -9,7 +9,13 @@ Complete step-by-step installation for OpenClaw + Twilio Voice.
 - Docker & Docker Compose
 - A domain name (optional but recommended for SSL)
 
-## Step 1: Install Ollama
+## Step 1: Set Up Ollama
+
+Choose **Option A** (Self-hosted) or **Option B** (Ollama Cloud).
+
+### Option A: Self-Hosted Ollama (Recommended)
+
+Runs on your own hardware. Free, but requires sufficient RAM/CPU.
 
 ```bash
 # Install Ollama
@@ -21,6 +27,20 @@ ollama pull llama3.2
 # Verify it works
 ollama run llama3.2 "Say hello"
 ```
+
+### Option B: Ollama Cloud (Convenient)
+
+Managed cloud service. Good for small VPS or when you don't want to run models locally.
+
+1. Sign up at [ollama.com/cloud](https://ollama.com/cloud)
+2. Generate an API key from your dashboard
+3. Add the API key to your `.env` file (see Step 4)
+4. No local Ollama installation needed
+
+**When to use Ollama Cloud:**
+- Small VPS (1GB RAM insufficient for local models)
+- Want zero hardware management
+- Testing or temporary setups
 
 ## Step 2: Install OpenClaw
 

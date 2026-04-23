@@ -19,6 +19,7 @@ TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
 TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER", "")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
+OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
 OPENCLAW_URL = os.getenv("OPENCLAW_URL", "")
 OPENCLAW_SECRET = os.getenv("OPENCLAW_SECRET", "")
@@ -29,24 +30,50 @@ logger = logging.getLogger(__name__)
 
 
 async def query_ollama(prompt: str, system: Optional[str] = None) -> str:
-    """Send a prompt to Ollama and return the response."""
-    url = f"{OLLAMA_URL}/api/generate"
+    """Send a prompt to Ollama (local or cloud) and return the response."""
     
-    payload = {
-        "model": OLLAMA_MODEL,
-        "prompt": prompt,
-        "stream": False
-    }
+    # Determine if using Ollama Cloud (uses OpenAI-compatible API)
+    is_cloud = "api.ollama.com" in OLLAMA_URL
     
-    if system:
-        payload["system"] = system
+    if is_cloud:
+        # Ollama Cloud uses OpenAI-compatible chat completions API
+        url = f"{OLLAMA_URL}/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {OLLAMA_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        messages = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        messages.append({"role": "user", "content": prompt})
+        payload = {
+            "model": OLLAMA_MODEL,
+            "messages": messages,
+            "stream": False
+        }
+    else:
+        # Local Ollama uses native API
+        url = f"{OLLAMA_URL}/api/generate"
+        headers = {"Content-Type": "application/json"}
+        payload = {
+            "model": OLLAMA_MODEL,
+            "prompt": prompt,
+            "stream": False
+        }
+        if system:
+            payload["system"] = system
     
     try:
         async with httpx.AsyncClient(timeout=60.0) as client:
-            response = await client.post(url, json=payload)
+            response = await client.post(url, json=payload, headers=headers)
             response.raise_for_status()
             data = response.json()
-            return data.get("response", "").strip()
+            
+            # Parse response based on API type
+            if is_cloud:
+                return data.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+            else:
+                return data.get("response", "").strip()
     except Exception as e:
         logger.error(f"Ollama error: {e}")
         return "I'm having trouble thinking right now. Please try again."

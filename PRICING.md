@@ -15,12 +15,36 @@ Honest cost analysis for running OpenClaw + Twilio Voice.
 
 ### 1. Ollama (LLM Engine)
 
+**Option A: Self-Hosted (Recommended)**
+
 **Cost: $0**
 
 - Runs entirely on your hardware
 - No API fees, no usage limits
 - Requires GPU for larger models (optional)
 - CPU-only works fine for smaller models (llama3.2, phi3)
+
+**Option B: Ollama Cloud (Convenient)**
+
+**Cost: ~$0.50-5/month** (light usage)
+
+- Managed cloud service at [ollama.com/cloud](https://ollama.com/cloud)
+- Usage-based pricing, cheaper than OpenAI API
+- No hardware requirements, works on minimal VPS
+- Same models available (llama3.2, etc.)
+- Requires API key
+
+| Usage Tier | Estimated Cost |
+|------------|----------------|
+| Light (~1K requests/month) | **~$0.50-2/month** |
+| Medium (~10K requests/month) | **~$2-5/month** |
+| Heavy (~100K+ requests/month) | **~$5-20/month** |
+
+**When to use Ollama Cloud:**
+- Running on a small VPS (1GB RAM)
+- Don't want to manage local models
+- Need quick setup without hardware requirements
+- Temporary/testing deployments
 
 ### 2. OpenClaw
 
